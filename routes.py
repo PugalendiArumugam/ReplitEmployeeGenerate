@@ -12,21 +12,25 @@ api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 @api_bp.route('/employees', methods=['POST'])
 def create_employee():
     """Create a new employee"""
+    print("Post request to add an employees")
     try:
         # Get JSON data from request
         json_data = request.get_json()
-        
+
         if not json_data:
             return jsonify({'error': 'No input data provided'}), 400
         
         # Validate and deserialize input
         try:
             employee_data = employee_schema.load(json_data)
+
         except ValidationError as err:
             return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
         
         # Check if employee number already exists
         existing_employee = Employee.query.filter_by(employee_number=employee_data['employee_number']).first()
+
+
         if existing_employee:
             return jsonify({'error': 'Employee number already exists'}), 409
         
@@ -43,22 +47,27 @@ def create_employee():
         
     except IntegrityError as e:
         db.session.rollback()
+        print("Exception 3")
         logging.error(f"Database integrity error: {str(e)}")
         return jsonify({'error': 'Database integrity error', 'message': 'Employee number must be unique'}), 409
     
     except SQLAlchemyError as e:
         db.session.rollback()
+        print("Exception 4")
         logging.error(f"Database error: {str(e)}")
         return jsonify({'error': 'Database error', 'message': 'Failed to create employee'}), 500
     
     except Exception as e:
         db.session.rollback()
+        print("Exception 5")
         logging.error(f"Unexpected error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
 @api_bp.route('/employees', methods=['GET'])
 def get_all_employees():
     """Get all employees"""
+#    print("get all employees")
+
     try:
         # Get query parameters for pagination
         page = request.args.get('page', 1, type=int)
@@ -73,9 +82,12 @@ def get_all_employees():
             per_page=per_page, 
             error_out=False
         )
+
+        print("Before serialize")
         
         # Serialize employees
         result = employees_schema.dump(employees.items)
+        print(result)
         
         return jsonify({
             'employees': result,

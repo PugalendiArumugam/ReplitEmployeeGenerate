@@ -3,18 +3,19 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Date
 
 class Employee(db.Model):
-    __tablename__ = 'employees'
+    __tablename__ = 'Employee'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    employee_number = Column(String(20), unique=True, nullable=False, index=True)
+    employee_number = Column(String(45), unique=True, nullable=False, index=True)
     employee_name = Column(String(100), nullable=False)
-    employee_dob = Column(Date, nullable=False)
+#    employee_dob = db.Column(db.Date, nullable=False)
+    employee_dob = db.Column(db.DateTime, nullable=False)
     employee_firstname = Column(String(50), nullable=False)
     employee_lastname = Column(String(50), nullable=False)
     employee_city = Column(String(50), nullable=False)
     created_at = Column(db.DateTime, default=datetime.utcnow)
     updated_at = Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
     def __repr__(self):
         return f'<Employee {self.employee_number}: {self.employee_name}>'
     
